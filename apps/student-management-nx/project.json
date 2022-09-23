@@ -1,0 +1,83 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/student-management-nx/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/student-management-nx",
+        "index": "apps/student-management-nx/src/index.html",
+        "baseHref": "/",
+        "main": "apps/student-management-nx/src/main.tsx",
+        "polyfills": "apps/student-management-nx/src/polyfills.ts",
+        "tsConfig": "apps/student-management-nx/tsconfig.app.json",
+        "assets": [
+          "apps/student-management-nx/src/favicon.ico",
+          "apps/student-management-nx/src/assets"
+        ],
+        "styles": ["apps/student-management-nx/src/styles.scss"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/student-management-nx/src/environments/environment.ts",
+              "with": "apps/student-management-nx/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "student-management-nx:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "student-management-nx:build:development"
+        },
+        "production": {
+          "buildTarget": "student-management-nx:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/student-management-nx/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/student-management-nx"],
+      "options": {
+        "jestConfig": "apps/student-management-nx/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
