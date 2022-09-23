@@ -26,51 +26,64 @@ export function App() {
 
   const handleChange = (key: string, value: string | undefined) => {
     console.log(key, value);
-    setSv({...sv, [key]: value});
+    setSv({ ...sv, [key]: value });
   }
 
-  function addSinhVien() {
+  function saveSinhVien() {
     console.log(sv);
-
-    fetch('http://localhost:3000/api/sinhvien', {
-      method: 'POST',
-      body: JSON.stringify(sv),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-      .then((_) => _.json())
-      .then((newSv) => {
-        console.log(newSv);
-        setSinhViens([
-          ...sinhViens,
-          newSv
-        ]);
-      });
+    const isUpdate = (sv.id) ? true : false;
+    if (isUpdate) {
+      fetch('http://localhost:3000/api/sinhvien/' + sv.id, {
+        method: 'PUT',
+        body: JSON.stringify(sv),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+        .then((_) => _.json())
+        .then((newSv) => {
+          console.log(newSv);
+          fetch('http://localhost:3000/api/sinhvien')
+            .then((_) => _.json())
+            .then(setSinhViens);
+        });
+    } else {
+      fetch('http://localhost:3000/api/sinhvien', {
+        method: 'POST',
+        body: JSON.stringify(sv),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+        .then((_) => _.json())
+        .then((newSv) => {
+          console.log(newSv);
+          setSinhViens([
+            ...sinhViens,
+            newSv
+          ]);
+          fetch('http://localhost:3000/api/sinhvien')
+            .then((_) => _.json())
+            .then(setSinhViens);
+        });
+    }
   }
 
   function deleteSinhvien(id: number | undefined) {
     fetch(`http://localhost:3000/api/sinhvien/${id}`, {
       method: 'DELETE',
     })
-      .then((_) => _.json())
       .then((res) => {
         console.log(res);
+        
+        fetch('http://localhost:3000/api/sinhvien')
+        .then((_) => _.json())
+        .then(setSinhViens);
       });
   }
 
-  function editSinhvien(id: number | undefined) {
-    fetch(`http://localhost:3000/api/sinhvien/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(sv),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-      .then((_) => _.json())
-      .then((res) => {
-        console.log(res);
-      });
+  function editSinhvien(sinhvien: SinhVien) {
+    setSv({ ...sv, ...sinhvien });
   }
 
   return (
@@ -78,9 +91,9 @@ export function App() {
       <h1>Sinh vien</h1>
       <ul>
         {sinhViens.map((s) => (
-          <li className={'sv'}>
+          <li className={'sv'} key={s.id}>
             {s.hovaten}&nbsp;
-            <button className={'edit-sv'} onClick={() => editSinhvien(s.id)}>Edit</button>&nbsp;
+            <button className={'edit-sv'} onClick={() => editSinhvien(s)}>Edit</button>&nbsp;
             <button className={'delete-sv'} onClick={() => deleteSinhvien(s.id)}>Delete</button>
           </li>
         ))}
@@ -92,8 +105,8 @@ export function App() {
         <div><input name='username' value={sv.username} onChange={(e) => handleChange('username', e.target.value)} placeholder='Nhập username' /></div>
         <div><input name='password' value={sv.password} onChange={(e) => handleChange('password', e.target.value)} placeholder='Nhập password' /></div>
       </form>
-      <button id={'add-sv'} onClick={addSinhVien}>
-        Add
+      <button id={'add-sv'} onClick={saveSinhVien}>
+        Save
       </button>
       <div />
     </>
